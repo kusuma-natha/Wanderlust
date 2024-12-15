@@ -21,7 +21,6 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(cookieParser());
-app.use(flash());
 
 const sessionOptions = {
     secret: "mysupersecretcode",
@@ -35,9 +34,11 @@ const sessionOptions = {
 };
 
 app.use(session(sessionOptions));
+app.use(flash());
 
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
     next();
 });
 

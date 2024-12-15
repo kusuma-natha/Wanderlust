@@ -30,17 +30,12 @@ router.get("/new", wrapAsync((req, res) => {
 // Show Route
 router.get("/:id", wrapAsync(async (req, res) => {
     let { id } = req.params;
-
-    // Ensure id is valid
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new ExpressError(400, "Invalid listing ID");
-    }
-
     const listing = await Listing.findById(id).populate("reviews");
     if (!listing) {
-        throw new ExpressError(404, "Listing not found!");
+        req.flash("error", "Listing you requested for does not exist!!");
+        res.redirect("/listings");
     }
-    return res.render("./listings/show.ejs", { listing });
+    res.render("listings/show.ejs", { listing });
 }));
 
 // Create Route
@@ -57,15 +52,10 @@ router.post("/",
 // Edit Route
 router.get("/:id/edit", wrapAsync(async (req, res) => {
     let { id } = req.params;
-
-    // Ensure id is valid
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        throw new ExpressError(400, "Invalid listing ID");
-    }
-
     const listing = await Listing.findById(id);
     if (!listing) {
-        throw new ExpressError(404, "Listing not found!");
+        req.flash("error", "Listing you requested for does not exist!!");
+        res.redirect("/listings");
     }
     return res.render("./listings/edit.ejs", { listing });
 }));
@@ -85,6 +75,7 @@ router.put("/:id",
         if (!updatedListing) {
             throw new ExpressError(404, "Listing not found!");
         }
+        req.flash("success", "Listing Updated!");
         return res.redirect(`/listings/${id}`);
     })
 );
