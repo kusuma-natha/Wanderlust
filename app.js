@@ -22,6 +22,7 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
 const dbUrl = process.env.ATLASDB_URL;
+const secretcode = process.env.SECRET;
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -34,7 +35,7 @@ app.use(cookieParser());
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     crypto: {
-        secret: "mysupersecretcode",
+        secret: secretcode,
     },
     touchAfter: 24 * 3600,
 });
@@ -45,7 +46,7 @@ store.on("error", ()=>{
 
 const sessionOptions = {
     store,
-    secret: "mysupersecretcode",
+    secret: secretcode,
     resave: false,
     saveUninitialized: true,
     cookie: {
